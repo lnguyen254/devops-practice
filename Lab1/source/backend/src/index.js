@@ -2,6 +2,22 @@ const app = require('./app')
 
 const PORT = process.env.PORT || 3000
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
+})
+
+// BASIC GRACEFUL SHUTDOWN
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server')
+  server.close(() => {
+    console.log('HTTP server closed')
+    process.exit(0) // Exit successfully
+  })
+})
+
+process.on('SIGINT', () => {
+  server.close(() => {
+    console.log('HTTP server closed')
+    process.exit(0) 
+  })
 })
